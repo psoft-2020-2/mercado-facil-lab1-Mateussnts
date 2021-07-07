@@ -7,9 +7,16 @@ public class ErroLote {
 
 	static final String SEM_LOTES_CADASTRADOS = "Não há lotes cadastrados";
 	
+	static final String LOTE_NAO_CADASTRADO = "Lote com id %s não está cadastrado";
+	
 	public static ResponseEntity<CustomErrorType> erroSemLotesCadastrados() {		
 		return new ResponseEntity<CustomErrorType>(new CustomErrorType(ErroLote.SEM_LOTES_CADASTRADOS),
 				HttpStatus.NO_CONTENT);
+	}
+	
+	public static ResponseEntity<CustomErrorType> erroLoteNaoEnconrtrado(long id) {
+		return new ResponseEntity<CustomErrorType>(new CustomErrorType(String.format(ErroLote.LOTE_NAO_CADASTRADO, id)),
+				HttpStatus.NOT_FOUND);
 	}
 }
 
