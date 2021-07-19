@@ -96,4 +96,48 @@ public class ProdutoApiController {
 
 		return new ResponseEntity<Produto>(HttpStatus.OK);
 	}
+	
+	/**
+	 * *NAO ENTENDI MUITO BEM A ESPECIFICAÇAO DE IMPLEMENTAÇAO DO LAB01
+	 * ESTOU FAZENDO DO MODO QUE ACHO CORRETO*
+	 * 
+	 * 
+	 * Cadastrando descricao a determinado produto, adquirido pelo id.
+	 * @param id
+	 * @param descricao
+	 * @return
+	 */
+	
+	@RequestMapping(value = "/produto/{id}", method = RequestMethod.POST)
+	public ResponseEntity<?> cadastrarDescricaoProduto(@PathVariable("id") long id, @PathVariable("String") String descricao){
+		Optional<Produto> optionalProduto = produtoService.getProdutoById(id);
+		
+		if(!optionalProduto.isPresent()){
+			return ErroProduto.erroProdutoNaoEnconrtrado(id);
+		}
+		
+		produtoService.cadastrarDescricao(id, descricao);
+		
+		return new ResponseEntity<Produto>(HttpStatus.OK);
+	}
+	
+	/**
+	 * exibindo descriçao de determinado produto apesar de nao fazer sentido ja que eu poderia 
+	 * divulgar isso no GET de consulta, to so testando.
+	 * @param id
+	 * @return
+	 */
+	
+	@RequestMapping(value = "/myproduto/{id}", method = RequestMethod.GET)
+	public ResponseEntity<?> exibirDescricaoProduto(@PathVariable("id") long id) {
+		Optional<Produto> optionalProduto = produtoService.getProdutoById(id);
+		
+		if(!optionalProduto.isPresent()) {
+			return ErroProduto.erroProdutoNaoEnconrtrado(id);
+		}
+		
+		produtoService.exibirDescricao(id);
+		
+		return new ResponseEntity<Produto>(optionalProduto.get(), HttpStatus.OK);
+	}
 }
