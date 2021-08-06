@@ -1,4 +1,4 @@
-package com.ufcg.psoft.mercadofacil.model;
+package com.ufcg.psoft.mercadofacil.model.payments;
 
 import java.math.BigDecimal;
 
@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class Pagamento {
+public abstract class Pagamento {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

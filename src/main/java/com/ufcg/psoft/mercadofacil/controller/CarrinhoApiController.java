@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ufcg.psoft.mercadofacil.model.Carrinho;
+import com.ufcg.psoft.mercadofacil.model.Cliente;
 import com.ufcg.psoft.mercadofacil.model.Produto;
 import com.ufcg.psoft.mercadofacil.repository.CarrinhoRepository;
 import com.ufcg.psoft.mercadofacil.repository.ProdutoRepository;
@@ -31,11 +32,35 @@ public class CarrinhoApiController {
 
     @Autowired
     private CarrinhoRepository carrinhoRepository;
+    
+    @RequestMapping(value = "/criaCarrinho", method = RequestMethod.POST)
+    public ResponseEntity<?> criaCarrinho(@RequestBody Long id, int quantidade, Cliente cliente) {
 
+        Optional<Produto> optProduto = produtoRepository.findById(id);
+
+        if (!optProduto.isPresent()) {
+            return new ResponseEntity<CustomErrorType>(new CustomErrorType("id do produto nao encontrado"),
+                    HttpStatus.NOT_FOUND);
+        }
+        Produto produtoOpt = optProduto.get();
+
+        if (!produtoOpt.isDisponivel()) {
+            return new ResponseEntity<CustomErrorType>(new CustomErrorType("produto nao encontrado"),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        carrinhoService.criaCarrinho();
+        carrinhoService.adicionaProduto(id, produtoOpt, quantidade);
+
+
+        return new ResponseEntity<>(carrinhoService.exibeCarrinho(id), HttpStatus.CREATED);
+    
+    }
+        
     @RequestMapping(value = "/addProduto", method = RequestMethod.POST)
-    public ResponseEntity<?> adicionarProdutos(@RequestBody Long idProduto, Long idCarrinho, int quantidade) {
+    public ResponseEntity<?> adicionarProdutos(@RequestBody Long id, Long idCarrinho, int quantidade) {
 
-        Optional<Produto> optProduto = produtoRepository.findById(idProduto);
+        Optional<Produto> optProduto = produtoRepository.findById(id);
 
         if (!optProduto.isPresent()) {
             return new ResponseEntity<CustomErrorType>(new CustomErrorType("Produto nao encontrado"),
@@ -52,22 +77,22 @@ public class CarrinhoApiController {
         }
         if (produtoOpt.isDisponivel()) {
             System.out.println(produtoOpt.isDisponivel());
-            carrinhoService.adicionaProduto(produtoOpt, quantidade);
+            carrinhoService.adicionaProduto(id, produtoOpt, quantidade);
         }
-        return new ResponseEntity<>(carrinhoService, HttpStatus.CREATED);
+        return new ResponseEntity<>(carrinhoService.exibeCarrinho(id), HttpStatus.CREATED);
     }
     
     @RequestMapping(value = "/itemCarrinho", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteItemCarrinho(@RequestBody Produto produto) {
+    public ResponseEntity<?> deleteItemCarrinho(@RequestBody Long id, Produto produto) {
 
-        boolean result = carrinhoService.deletaItemCarrinho(produto);
+        boolean result = carrinhoService.deletaItemCarrinho(id, produto);
 
         if (!result) {
             return new ResponseEntity<CustomErrorType>(new CustomErrorType("Produto nao encontrado!"),
                     HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(carrinhoService, HttpStatus.OK);
+        return new ResponseEntity<>(carrinhoService.exibeCarrinho(id), HttpStatus.OK);
     }
     
     @RequestMapping(value = "/deletaCarrinho", method = RequestMethod.DELETE)
@@ -84,10 +109,9 @@ public class CarrinhoApiController {
     }
     
     @RequestMapping(value = "/finalizaCarrinho", method = RequestMethod.POST)
-    public ResponseEntity<?> finalizaCarrinho(){
+    public ResponseEntity<?> finalizaCarrinho(long id){
     	
-    	carrinhoService.finalizaCarrinho();
-        return new ResponseEntity<>(carrinhoService, HttpStatus.OK);
+    	carrinhoService.finalizaCarrinho(id);
+        return new ResponseEntity<>(carrinhoService.exibeCarrinho(id), HttpStatus.OK);
     }
-    
 }

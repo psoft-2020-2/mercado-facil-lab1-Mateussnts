@@ -5,7 +5,10 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ufcg.psoft.mercadofacil.model.Pagamento;
+import com.ufcg.psoft.mercadofacil.model.payments.Boleto;
+import com.ufcg.psoft.mercadofacil.model.payments.Cartao;
+import com.ufcg.psoft.mercadofacil.model.payments.Pagamento;
+import com.ufcg.psoft.mercadofacil.model.payments.PayPal;
 import com.ufcg.psoft.mercadofacil.repository.PagamentoRepository;
 
 @Service
@@ -15,12 +18,32 @@ public class PagamentoServiceImpl implements PagamentoService{
 	public PagamentoRepository pagamentoRepository;
 	
 	@Override
-    public BigDecimal calculaTotalAcrescimo(BigDecimal valorCompra) {
-        Pagamento boleto = new Pagamento(valorCompra, new BigDecimal(0));
+    public BigDecimal calculaAcrescimoBoleto(BigDecimal valorCompra) {
+        Pagamento boleto = new Boleto(valorCompra, new BigDecimal(0));
         BigDecimal total = boleto.calculaAcrescimo(new BigDecimal(0), valorCompra);
         BigDecimal totalFinal = total.add(valorCompra);
         boleto.setValorTotal(totalFinal);
         pagamentoRepository.save(boleto);
+        return totalFinal;
+    }
+	
+	@Override
+    public BigDecimal calculaAcrescimoPayPal( BigDecimal valorCompra) {
+        Pagamento paypal = new PayPal(valorCompra, new BigDecimal(0.02));
+        BigDecimal total = paypal.calculaAcrescimo(new BigDecimal(0.02),valorCompra);
+        BigDecimal totalFinal = total.add(valorCompra);
+        paypal.setValorTotal(totalFinal);
+        pagamentoRepository.save(paypal);
+        return totalFinal;
+    }
+
+    @Override
+    public BigDecimal calculaAcrescimoCartao(BigDecimal valorCompra) {
+        Pagamento cartao = new Cartao(valorCompra, new BigDecimal(0.05));
+        BigDecimal total = cartao.calculaAcrescimo(new BigDecimal(0.05),valorCompra);
+        BigDecimal totalFinal = total.add(valorCompra);
+        cartao.setValorTotal(totalFinal);
+        pagamentoRepository.save(cartao);
         return totalFinal;
     }
 }

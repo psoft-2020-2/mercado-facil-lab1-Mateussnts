@@ -38,26 +38,22 @@ public class CompraApiController {
     private ProdutoRepository produtoRepository;
 
     @RequestMapping(value = "/criaCompra", method = RequestMethod.POST)
-    public ResponseEntity<?> criaCompra(@RequestBody Long idProduto, int quantidade) {
+    public ResponseEntity<?> criaCompra(@RequestBody Long id, int quantidade) {
 
-        Optional<Produto> optProduto = produtoRepository.findById(idProduto);
+        Optional<Produto> optProduto = produtoRepository.findById(id);
 
         if (!optProduto.isPresent()) {
-            return new ResponseEntity<CustomErrorType>(new CustomErrorType("Produto with id " + idProduto + " not found"),
+            return new ResponseEntity<CustomErrorType>(new CustomErrorType("Produto nao encontrado"),
                     HttpStatus.NOT_FOUND);
         }
         Produto produtoOpt = optProduto.get();
 
-        if (!produtoOpt.isDisponivel()) {
-            return new ResponseEntity<CustomErrorType>(new CustomErrorType("Produto with id " + idProduto + " not found"),
-                    HttpStatus.NOT_FOUND);
-        }
         compraService.criaCompra();
         carrinhoService.criaCarrinho();
-        carrinhoService.adicionaProduto(produtoOpt, quantidade);
+        carrinhoService.adicionaProduto(id, produtoOpt, quantidade);
 
 
-        return new ResponseEntity<>(carrinhoService, HttpStatus.CREATED);
+        return new ResponseEntity<>(carrinhoService.exibeCarrinho(id), HttpStatus.CREATED);
     }
     
     @RequestMapping(value = "/listaUltimasCompras/{id}", method = RequestMethod.GET)
@@ -80,11 +76,11 @@ public class CompraApiController {
         boolean resp = compraService.deletaCompra(id);
 
         if (!resp) {
-            return new ResponseEntity<CustomErrorType>(new CustomErrorType("Compra com o id  " + id + " não pode ser encontrado!"),
+            return new ResponseEntity<CustomErrorType>(new CustomErrorType("Compra com o id não pode ser encontrado!"),
                     HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(compraService, HttpStatus.OK);
+        return new ResponseEntity<>(compraService.listaCompraRealizadaId(id), HttpStatus.OK);
     }
     
     @RequestMapping(value = "/descritivoCompra", method = RequestMethod.GET)
@@ -98,6 +94,6 @@ public class CompraApiController {
     	
     	return new ResponseEntity<>(compraService.descritivoCompra(id), HttpStatus.OK);
     }
-    
+   
     
 }

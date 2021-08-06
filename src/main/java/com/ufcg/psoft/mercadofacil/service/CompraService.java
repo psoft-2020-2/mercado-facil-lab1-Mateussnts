@@ -1,5 +1,6 @@
 package com.ufcg.psoft.mercadofacil.service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import com.ufcg.psoft.mercadofacil.model.Carrinho;
@@ -17,6 +18,8 @@ public interface CompraService {
 	public boolean deletaCompra(Long id);
 
 	public String descritivoCompra(Long id);
+
+	public BigDecimal getValorCompra(Carrinho carrinho, String pagamento, Cliente cliente);
 	
 
 }
