@@ -1,7 +1,6 @@
 package com.ufcg.psoft.mercadofacil.service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,14 +41,13 @@ public class CompraServiceImpl implements CompraService{
 	
 	@Override
 	    public boolean deletaCompra(Long id){
-	        List<Compra> listaDeCompras = compraRepository.findAll();
-	        for (Compra compra: listaDeCompras){
-	            if(compra.getId().equals(id)){
-	                listaDeCompras.remove(compra);
-	                compraRepository.delete(compra);
-	                return true;
-	            }
-	        }
+	        Optional<Compra> compraID = compraRepository.findById(id);
+	        Compra compra = compraID.get();
+            if(compra.getId().equals(id)){
+                compraRepository.delete(compra);
+                return true;
+            }
+	        
 	        return false;
 	    }
 	
@@ -79,5 +77,11 @@ public class CompraServiceImpl implements CompraService{
 		Optional<Compra> compra = compraRepository.findById(id);
 		return compra.toString();
 	}
+	
+	@Override
+    public BigDecimal getValorCompra(Carrinho carrinho, String pagamento, Cliente cliente){
+        Compra compra = new Compra(carrinho, pagamento, cliente);
+        return compra.calculaValor();
+    }
 	
 }

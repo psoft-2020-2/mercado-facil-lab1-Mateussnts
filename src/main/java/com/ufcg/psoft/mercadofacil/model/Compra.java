@@ -10,8 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-
-
 @Entity
 public class Compra {
 
@@ -30,21 +28,20 @@ public class Compra {
     private String descricao;
     private Date data;
 
-	public Compra(Long id, Carrinho carrinho, Cliente cliente, BigDecimal valor, String pagamento, Date data) {
-		this.id = id;
-		this.carrinho = carrinho;
-		this.cliente = cliente;
-		this.data = data;
-		this.valor = valor;
-		this.setPagamento(pagamento);
-	}
-
 	public Compra() {
 	}
 
-	public Compra(Carrinho carrinho2, String pagamento2, Cliente cliente2) {
-		// TODO Auto-generated constructor stub
+	public Compra(Carrinho carrinho, String pagamento, Cliente cliente) {
+		this.carrinho = carrinho;
+		this.pagamento = pagamento;
+		this.cliente = cliente;
+	
 	}
+	
+	public Compra(Carrinho carrinho){
+        this.carrinho = carrinho;
+
+    }
 
 	public Long getId() {
 		return id;
@@ -79,22 +76,22 @@ public class Compra {
 	}
 
 	public BigDecimal calculaValor() {
-		// TODO Auto-generated method stub
+		if (!this.carrinho.isFinalizado()){
+			List<ItensNoCarrinho> itens = carrinho.getListaItensCarrinho();
+			BigDecimal valorTotal = new BigDecimal(0);
+			for (ItensNoCarrinho item: itens){
+				BigDecimal valor = item.getProduto().getPreco().multiply(new BigDecimal(item.getQuantidade()));
+				valorTotal = valorTotal.add(valor);
+				
+			}
+			return valorTotal;
+		}
 		return null;
 	}
-
-	public BigDecimal setValor(BigDecimal valor2) {
-	  if (!this.carrinho.isFinalizado()){
-	        List<ItensNoCarrinho> itens = carrinho.getListaItensCarrinho();
-	        BigDecimal valorTotal = new BigDecimal(0);
-	        for (ItensNoCarrinho item: itens){
-	            BigDecimal valor = item.getProduto().getPreco().multiply(new BigDecimal(item.getQuantidade()));
-	            valorTotal = valorTotal.add(valor);
 	
-	        }
-	        return valorTotal;
-	    }
-	    return null;
+
+	public void setValor(BigDecimal valor) {
+		this.valor = valor;
 	}
 
 	public String getPagamento() {

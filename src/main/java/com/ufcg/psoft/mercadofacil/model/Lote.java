@@ -15,7 +15,8 @@ public class Lote {
 	
 	@OneToOne
     private Produto produto;
-    private int numeroDeItens;
+    
+	private int numeroDeItens;
     private String data;
 
     @SuppressWarnings("unused")

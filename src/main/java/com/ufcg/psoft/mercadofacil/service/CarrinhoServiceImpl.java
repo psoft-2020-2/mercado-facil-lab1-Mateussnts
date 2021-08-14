@@ -10,13 +10,14 @@ import com.ufcg.psoft.mercadofacil.repository.CarrinhoRepository;
 import com.ufcg.psoft.mercadofacil.repository.ItensNoCarrinhoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CarrinhoServiceImpl implements CarrinhoService {
 
     @Autowired
     private CarrinhoRepository carrinhoRepository;
-
+    
     @Autowired
     private ItensNoCarrinhoRepository carrinhoItemRepository;
 
@@ -32,26 +33,21 @@ public class CarrinhoServiceImpl implements CarrinhoService {
      */
     
 	@Override
-    public void adicionaProduto(Produto produto, int quantidade){
-
-	    Carrinho carrinhoUnity = new Carrinho();
-	    carrinhoRepository.save(carrinhoUnity);
+    public void adicionaProduto(Long id, Produto produto, int quantidade){
 		
-        List<Carrinho> listaDeCarrinhos = carrinhoRepository.findAll();
-
-        for(Carrinho carrinho: listaDeCarrinhos) {
-            if (!carrinho.isFinalizado()) {
-                if (carrinho.getItemProduto(produto) != null) {
-                    ItensNoCarrinho item = carrinho.getItemProduto(produto);
-                    int qtd = item.getQuantidade() + quantidade;
-                    item.setQuantidade(qtd);
-                    carrinhoItemRepository.save(item);
-                    carrinhoRepository.save(carrinho);
-                } else {
-                    ItensNoCarrinho itemSalvo = carrinho.addItemCarrinho(produto, quantidade);
-                    carrinhoItemRepository.save(itemSalvo);
-                    carrinhoRepository.save(carrinho);
-                }
+        Optional<Carrinho> carrinhoID = carrinhoRepository.findById(id);
+        Carrinho carrinho = carrinhoID.get();
+        if (!carrinho.isFinalizado() && produto.isDisponivel()) {
+            if (carrinho.getItemProduto(produto) != null) {
+                ItensNoCarrinho item = carrinho.getItemProduto(produto);
+                int qtd = item.getQuantidade() + quantidade;
+                item.setQuantidade(qtd);
+                carrinhoItemRepository.save(item);
+                carrinhoRepository.save(carrinho);
+            } else {
+                ItensNoCarrinho itemSalvo = carrinho.addItemCarrinho(produto, quantidade);
+                carrinhoItemRepository.save(itemSalvo);
+                carrinhoRepository.save(carrinho);
             }
         }
     }
@@ -61,18 +57,17 @@ public class CarrinhoServiceImpl implements CarrinhoService {
      */
     
 	@Override
-    public boolean deletaItemCarrinho(Produto produto) {
-        List<Carrinho> listaDeCarrinhos = carrinhoRepository.findAll();
+    public boolean deletaItemCarrinho(Long id, Produto produto) {
+        Optional<Carrinho> carrinhoID = carrinhoRepository.findById(id);
 
-        for (Carrinho carrinho: listaDeCarrinhos){
-            List<ItensNoCarrinho> listaDeItens = carrinho.getListaItensCarrinho();
-            ItensNoCarrinho item = carrinho.getItemProduto(produto);
-            if(item.getProduto().equals(produto)){
-                listaDeItens.remove(item);
-                carrinhoItemRepository.delete(item);
-                carrinhoRepository.save(carrinho);
-                return true;
-            }
+        Carrinho carrinho = carrinhoID.get();
+        List<ItensNoCarrinho> listaDeItens = carrinho.getListaItensCarrinho();
+        ItensNoCarrinho item = carrinho.getItemProduto(produto);
+        if(item.getProduto().equals(produto)){
+            listaDeItens.remove(item);
+            carrinhoItemRepository.delete(item);
+            carrinhoRepository.save(carrinho);
+            return true;
         }
         return false;
     }
@@ -84,15 +79,12 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 	 * na duvida vo deleta o carrinho todo e a compra
 	 */
 	
-	@Override
-    public boolean deletaCarrinho(Long id) {
-        List<Carrinho> listaDeCarrinhos = carrinhoRepository.findAll();
-        for (Carrinho carrinho : listaDeCarrinhos) {
-            if (carrinho.getId() == id) {
-                listaDeCarrinhos.remove(carrinho);
-                carrinhoRepository.delete(carrinho);
-                return true;
-            }
+	public boolean deletaCarrinho(Long id) {
+        Optional<Carrinho> carrinhoID = carrinhoRepository.findById(id);
+        Carrinho carrinho = carrinhoID.get();
+        if (carrinho.getId() == id){
+            carrinhoRepository.delete(carrinho);
+            return true;
         }
         return false;
     }
@@ -102,14 +94,23 @@ public class CarrinhoServiceImpl implements CarrinhoService {
 	 */
 	
 	@Override
-    public void finalizaCarrinho() {
-        List<Carrinho> listaDeCarrinho = carrinhoRepository.findAll();
+    public void finalizaCarrinho(Long id) {
+        Optional<Carrinho> carrinhoID = carrinhoRepository.findById(id);
 
-        for (Carrinho carrinho: listaDeCarrinho){
-            if(!carrinho.isFinalizado()){
-                carrinho.setFinalizado(true);
-                carrinhoRepository.save(carrinho);
-            }
+        Carrinho carrinho = carrinhoID.get();
+        if(!carrinho.isFinalizado()){
+            carrinho.setFinalizado(true);
+            carrinhoRepository.save(carrinho);
         }
+    }
+	
+	@Override
+    public Carrinho exibeCarrinho(Long id){
+       Optional<Carrinho> carrinhoID = carrinhoRepository.findById(id);
+       Carrinho carrinho = carrinhoID.get();
+        if(!carrinho.isFinalizado() || carrinho.isFinalizado()){
+            return carrinho;
+        }
+        return null;
     }
 }
