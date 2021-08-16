@@ -18,32 +18,35 @@ public class PagamentoServiceImpl implements PagamentoService{
 	public PagamentoRepository pagamentoRepository;
 	
 	@Override
-    public BigDecimal calculaAcrescimoBoleto(BigDecimal valorCompra) {
-        Pagamento boleto = new Boleto(valorCompra, new BigDecimal(0));
-        BigDecimal total = boleto.calculaAcrescimo(new BigDecimal(0), valorCompra);
-        BigDecimal totalFinal = total.add(valorCompra);
-        boleto.setValorTotal(totalFinal);
-        pagamentoRepository.save(boleto);
-        return totalFinal;
-    }
+    public BigDecimal calculaAcrescimoPagamento(BigDecimal valorCompra, String pagamento) {
+        if(pagamento.equals("Boleto".toUpperCase())) {
+		
+			Pagamento boleto = new Boleto(valorCompra, new BigDecimal(0));
+	        BigDecimal total = boleto.calculaAcrescimo(new BigDecimal(0), valorCompra);
+	        BigDecimal totalFinal = total.add(valorCompra);
+	        boleto.setValorTotal(totalFinal);
+	        pagamentoRepository.save(boleto);
+	        return totalFinal;
+        }
 	
-	@Override
-    public BigDecimal calculaAcrescimoPayPal( BigDecimal valorCompra) {
-        Pagamento paypal = new PayPal(valorCompra, new BigDecimal(0.02));
-        BigDecimal total = paypal.calculaAcrescimo(new BigDecimal(0.02),valorCompra);
-        BigDecimal totalFinal = total.add(valorCompra);
-        paypal.setValorTotal(totalFinal);
-        pagamentoRepository.save(paypal);
-        return totalFinal;
-    }
-
-    @Override
-    public BigDecimal calculaAcrescimoCartao(BigDecimal valorCompra) {
-        Pagamento cartao = new Cartao(valorCompra, new BigDecimal(0.05));
-        BigDecimal total = cartao.calculaAcrescimo(new BigDecimal(0.05),valorCompra);
-        BigDecimal totalFinal = total.add(valorCompra);
-        cartao.setValorTotal(totalFinal);
-        pagamentoRepository.save(cartao);
-        return totalFinal;
-    }
+        else if(pagamento.equals("Boleto".toUpperCase())) {
+	        Pagamento paypal = new PayPal(valorCompra, new BigDecimal(0.02));
+	        BigDecimal total = paypal.calculaAcrescimo(new BigDecimal(0.02),valorCompra);
+	        BigDecimal totalFinal = total.add(valorCompra);
+	        paypal.setValorTotal(totalFinal);
+	        pagamentoRepository.save(paypal);
+	        return totalFinal;
+        }
+    
+        else if(pagamento.equals("Boleto".toUpperCase())) {  
+	        Pagamento cartao = new Cartao(valorCompra, new BigDecimal(0.05));
+	        BigDecimal total = cartao.calculaAcrescimo(new BigDecimal(0.05),valorCompra);
+	        BigDecimal totalFinal = total.add(valorCompra);
+	        cartao.setValorTotal(totalFinal);
+	        pagamentoRepository.save(cartao);
+	        return totalFinal;
+        }
+	   
+        return null; 
+	}
 }
