@@ -18,32 +18,35 @@ public class PerfilServiceImpl implements PerfilService{
     private PerfilRepository perfilRepository;
 
 	@Override
-    public BigDecimal calculaTotalComum(BigDecimal valor) {        
-            Perfil comum = new UsuarioNormal();
-            BigDecimal total = comum.calculaDesconto(valor, new BigDecimal(0.0));
-            BigDecimal totalFinal = valor.subtract(total);
-            comum.setValorTotal(totalFinal);
-            perfilRepository.save(comum);
-            return totalFinal;
+    public BigDecimal calculaTotalPerfil(BigDecimal valor, String perfil) {        
+            if(perfil.equals("Comum".toUpperCase())) {
+				Perfil comum = new UsuarioNormal();
+	        	BigDecimal total = comum.calculaDesconto(valor, new BigDecimal(0.0));
+	            BigDecimal totalFinal = valor.subtract(total);
+	            comum.setValorTotal(totalFinal);
+	            perfilRepository.save(comum);
+	            return totalFinal;
+            }
+            
+            else if(perfil.equals("Premium".toUpperCase())) {
+            	Perfil premium = new UsuarioPremium();
+                BigDecimal total = premium.calculaDesconto(valor, new BigDecimal(0.10));
+                BigDecimal totalFinal = valor.subtract(total);
+                premium.setValorTotal(totalFinal);
+                perfilRepository.save(premium);
+                return totalFinal;
+            }
+            
+            else if(perfil.equals("Especial".toUpperCase())) {
+            	 Perfil especial = new UsuarioEspecial();
+                 BigDecimal total = especial.calculaDesconto(valor, new BigDecimal(0.10));
+                 BigDecimal totalFinal = valor.subtract(total);
+                 especial.setValorTotal(totalFinal);
+                 perfilRepository.save(especial);
+                 return totalFinal;
+            }
+            
+            return null;
     }
 
-	@Override
-    public BigDecimal calculaTotalPremium(BigDecimal valor) {       
-            Perfil premium = new UsuarioPremium();
-            BigDecimal total = premium.calculaDesconto(valor, new BigDecimal(0.10));
-            BigDecimal totalFinal = valor.subtract(total);
-            premium.setValorTotal(totalFinal);
-            perfilRepository.save(premium);
-            return totalFinal;
-    }
-
-	@Override
-    public BigDecimal calculaTotalEspecial(BigDecimal valor) {   
-            Perfil especial = new UsuarioEspecial();
-            BigDecimal total = especial.calculaDesconto(valor, new BigDecimal(0.10));
-            BigDecimal totalFinal = valor.subtract(total);
-            especial.setValorTotal(totalFinal);
-            perfilRepository.save(especial);
-            return totalFinal;
-    }
 }
