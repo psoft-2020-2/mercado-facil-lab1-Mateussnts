@@ -16,6 +16,7 @@ public class Carrinho {
 	private int id;
 	
 	private boolean finalizado;
+	private String tipoProdutos;
 	
 	@OneToMany
 	private List<ItensNoCarrinho> listaDeItens;
@@ -28,6 +29,18 @@ public class Carrinho {
 	
 	public Carrinho() {
 		
+	}
+	
+	public Carrinho(String tipoProdutos) {
+		this.tipoProdutos = tipoProdutos;
+	}
+
+	public String getTipoProdutos() {
+		return tipoProdutos;
+	}
+
+	public void setTipoProdutos(String tipoProdutos) {
+		this.tipoProdutos = tipoProdutos;
 	}
 
 	public int getId() {
