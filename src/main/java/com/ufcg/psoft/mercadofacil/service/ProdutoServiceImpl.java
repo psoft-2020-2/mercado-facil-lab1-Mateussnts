@@ -37,8 +37,8 @@ public class ProdutoServiceImpl implements ProdutoService {
 	}
 
 	public Produto criaProduto(ProdutoDTO produtoDTO) {
-		Produto produto = new Produto(produtoDTO.getNome(), produtoDTO.getFabricante(), produtoDTO.getCodigoBarra(),
-				produtoDTO.getPreco(), produtoDTO.getCategoria());
+		Produto produto = new Produto(produtoDTO.getNome(), produtoDTO.getCodigoBarra(), produtoDTO.getFabricante(),
+				produtoDTO.getPreco(), produtoDTO.getCategoria(), produtoDTO.getDescricao());
 		
 		produto.tornaDisponivel();
 		return produto;
@@ -50,7 +50,26 @@ public class ProdutoServiceImpl implements ProdutoService {
 		produto.setCodigoBarra(produtoDTO.getCodigoBarra());
 		produto.mudaFabricante(produtoDTO.getFabricante());
 		produto.mudaCategoria(produtoDTO.getCategoria());
+		produto.mudaCategoria(produtoDTO.getDescricao());
 		
 		return produto;
+	}
+
+	/**
+	 * Estou me familiarizando com o ambiente
+	 * isso é uma simulaçao *cuidado
+	 * @return *
+	 */
+	
+	public void cadastrarDescricao(long id, String descricao) {
+		Optional<Produto> optionaProduto = produtoRepository.findById(id);
+		Produto produto = optionaProduto.get();
+		produto.setDescricao(descricao);
+	}
+
+
+	public String exibirDescricao(long id) {
+		Optional<Produto> optProduto = produtoRepository.findById(id);
+		return optProduto.get().getDescricao();
 	}
 }

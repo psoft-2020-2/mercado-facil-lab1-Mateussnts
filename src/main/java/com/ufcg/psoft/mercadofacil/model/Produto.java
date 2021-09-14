@@ -24,13 +24,16 @@ public class Produto {
 	private String fabricante;
 
 	private String categoria;
+	
+	private String descricao;
 
 	private boolean isDisponivel;
 
+	@SuppressWarnings("unused")
 	private Produto() {	}
 
 	public Produto(String nome, String codigoBarra, String fabricante,
-			BigDecimal preco, String nomeCategoria) {
+			BigDecimal preco, String nomeCategoria, String descricao) {
 		
 		this.nome = nome;
 		this.preco = preco;
@@ -38,6 +41,7 @@ public class Produto {
 		this.fabricante = fabricante;
 		this.categoria = nomeCategoria;
 		this.isDisponivel = false;
+		this.descricao = descricao;
 	}
 	
 	public Long getId() {
@@ -125,5 +129,13 @@ public class Produto {
 	
 	public String toString() {
 		return this.id + " " + this.nome;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
 	}
 }

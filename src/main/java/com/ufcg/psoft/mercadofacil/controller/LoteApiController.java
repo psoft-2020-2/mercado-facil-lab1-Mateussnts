@@ -44,7 +44,7 @@ public class LoteApiController {
 	}
 	
 	@RequestMapping(value = "/produto/{idProduto}/lote/", method = RequestMethod.POST)
-	public ResponseEntity<?> criarLote(@PathVariable("idProduto") long id, @RequestBody int numItens) {
+	public ResponseEntity<?> criarLote(@PathVariable("idProduto") long id, @RequestBody int numItens, @PathVariable("String") String data) {
 		
 		Optional<Produto> optionalProduto = produtoService.getProdutoById(id);
 		
@@ -53,7 +53,7 @@ public class LoteApiController {
 		}
 		
 		Produto produto = optionalProduto.get();
-		Lote lote = loteService.criaLote(numItens, produto);
+		Lote lote = loteService.criaLote(numItens, produto, data);
 		
 		if (!produto.isDisponivel() & (numItens > 0)) {
 			produto.tornaDisponivel();
@@ -64,4 +64,64 @@ public class LoteApiController {
 
 		return new ResponseEntity<>(lote, HttpStatus.CREATED);
 	}
+	
+	/**
+	 * atualizando a data de um lote especifico buscado de um id.
+	 * @param id
+	 * @return
+	 */
+	
+	@RequestMapping(value = "/lotes{id}", method = RequestMethod.PUT)
+	public ResponseEntity<?> editarDataValidade(@PathVariable("id") long id, @PathVariable("String") String novaData){
+		Optional<Lote> loteData = loteService.getLoteById(id);
+		
+		if(!loteData.isPresent()) {
+			return ErroLote.erroSemLotesCadastrados();
+		}
+		
+		Lote lote = loteData.get();
+		
+		loteService.editaData(lote, novaData);
+		loteService.salvarLote(lote);
+		
+		return new ResponseEntity<Lote>(HttpStatus.OK);
+	}
+	
+	/**
+	 * cadastrando data aos lotes
+	 * @param id
+	 * @param descricao
+	 * @return
+	 */
+	
+	@RequestMapping(value = "/lotes", method = RequestMethod.POST)
+	public ResponseEntity<?> cadastrarDataValidade(@PathVariable("id") long id, @PathVariable("String") String data){
+		loteService.cadastraDataAoLote(id, data);
+		return new ResponseEntity<Lote>(HttpStatus.OK);
+	}
+	
+	/**
+	 * exibindo data de validade de um lote especifico
+	 * @param id
+	 * @param descricao
+	 * @return
+	 */
+	
+	@RequestMapping(value = "/lotes/{id]", method = RequestMethod.GET)
+	public ResponseEntity<?> exibirDataValidade(@PathVariable("id") long id){
+		loteService.exibirDataValidade(id);
+		return new ResponseEntity<Lote>(HttpStatus.OK);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

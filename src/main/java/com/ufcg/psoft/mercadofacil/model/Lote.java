@@ -15,13 +15,17 @@ public class Lote {
 	
 	@OneToOne
     private Produto produto;
-    private int numeroDeItens;
-
-    private Lote() { }
     
-    public Lote(Produto produto, int numeroDeItens) {
+	private int numeroDeItens;
+    private String data;
+
+    @SuppressWarnings("unused")
+	private Lote() { }
+    
+    public Lote(Produto produto, int numeroDeItens, String data) {
         this.produto = produto;
         this.numeroDeItens = numeroDeItens;
+        this.data = data;
     }
 
     public Long getId() {
@@ -52,4 +56,12 @@ public class Lote {
                 ", numeroDeItens=" + numeroDeItens + '\'' +
                 '}';
     }
+
+	public String getData() {
+		return data;
+	}
+
+	public void setData(String data) {
+		this.data = data;
+	}
 }
